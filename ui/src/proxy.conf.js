@@ -3,9 +3,11 @@ const PROXY_CONFIG = [
         context: [
             "/api",
         ],
-        target: process.env.API_URL,
+        target: "http://localhost:40080",
         secure: false
     }
 ]
+
+console.log(process.env["API_URL"])
 
 module.exports = PROXY_CONFIG;

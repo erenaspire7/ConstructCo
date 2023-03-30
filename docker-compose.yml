@@ -6,7 +6,7 @@ networks:
 
 services:
   backend:
-    build: 
+    build:
       context: backend
       dockerfile: Dockerfile
     env_file:
@@ -16,3 +16,9 @@ services:
     networks:
       - construct_co
 
+  ui:
+
+    ports:
+      - "3000:4200"
+    networks:
+      - construct_co

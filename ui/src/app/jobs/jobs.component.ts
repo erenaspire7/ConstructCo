@@ -6,7 +6,7 @@ import { Job } from './job'
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { convertToInputDate } from './../utilities/date-helper'
-import { decimalRegex} from './../utilities/constants'
+import { decimalRegex, httpHeaders} from './../utilities/constants'
 
 
 @Component({
@@ -77,15 +77,15 @@ export class JobsComponent implements OnInit {
       this.error = undefined
       let jobId = this.selected?.jobId
 
-      this.selected!.description = this.form.controls['description'].value
-      this.selected!.hourCharge = +this.form.controls['hourCharge'].value
-      this.selected!.lastUpdated = new Date(this.form.controls['lastUpdated'].value).toISOString()
+      this.selected!.description = this.form.controls['description'].value!
+      this.selected!.hourCharge = +this.form.controls['hourCharge'].value!
+      this.selected!.lastUpdated = new Date(this.form.controls['lastUpdated'].value!).toISOString()
 
 
       if (jobId != null) {
         let url = environment.baseUrl + 'api/Jobs/' + jobId;
 
-        this.http.put(url, this.selected).subscribe(result => {
+        this.http.put(url, this.selected, {headers: httpHeaders}).subscribe(result => {
           let index = this.data.findIndex((el: any) => el.jobId == jobId)
           this.data[index] = this.selected!;
 
@@ -101,7 +101,7 @@ export class JobsComponent implements OnInit {
       } else {
         let url = environment.baseUrl + 'api/Jobs';
 
-        this.http.post(url, this.selected).subscribe(result => {
+        this.http.post(url, this.selected, {headers: httpHeaders}).subscribe(result => {
           toast!.classList.remove('opacity-0')
 
           setTimeout(() => {
@@ -138,13 +138,13 @@ export class JobsComponent implements OnInit {
       var job = <Job>{};
 
       job.jobId = (this.selected?.jobId) ? this.selected.jobId : 0;
-      job.description = this.form.controls['description'].value;
-      job.hourCharge = +this.form.controls['hourCharge'].value;
-      job.lastUpdated = new Date(this.form.controls['lastUpdated'].value).toISOString();
+      job.description = this.form.controls['description'].value!;
+      job.hourCharge = +this.form.controls['hourCharge'].value!;
+      job.lastUpdated = new Date(this.form.controls['lastUpdated'].value!).toISOString();
 
       var url = environment.baseUrl + 'api/Jobs/IsDuplicate';
 
-      return this.http.post<boolean>(url, job).pipe(map(result => {
+      return this.http.post<boolean>(url, job, {headers: httpHeaders}).pipe(map(result => {
         if (result) {
           this.error = 'Duplicate Row'
           return { isDuplicate: true }
@@ -166,7 +166,7 @@ export class JobsComponent implements OnInit {
         .set("fieldValue", control.value);
       var url = environment.baseUrl + 'api/Jobs/IsDupeField';
 
-      return this.http.post<boolean>(url, null, { params })
+      return this.http.post<boolean>(url, null, { params : params, headers: httpHeaders})
         .pipe(map(result => {
           return (result ? { isDupeField: true } : null);
         }));

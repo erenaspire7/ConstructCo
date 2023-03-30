@@ -6,7 +6,7 @@ import { convertToInputDate } from './../utilities/date-helper'
 import { environment } from './../../environments/environment';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { numberRegex } from './../utilities/constants'
+import { httpHeaders, numberRegex } from './../utilities/constants'
 
 
 
@@ -97,18 +97,18 @@ export class EmployeesComponent implements OnInit {
       this.error = undefined
       let employeeId = this.selected?.employeeId
 
-      this.selected!.firstName = this.form.controls['firstName'].value
-      this.selected!.lastName = this.form.controls['lastName'].value
-      this.selected!.initials = this.form.controls['initials'].value
-      this.selected!.jobId = +this.form.controls['jobId'].value
-      this.selected!.yearsOfService = +this.form.controls['yearsOfService'].value
-      this.selected!.hireDate = new Date(this.form.controls['hireDate'].value).toISOString()
+      this.selected!.firstName = this.form.controls['firstName'].value!
+      this.selected!.lastName = this.form.controls['lastName'].value!
+      this.selected!.initials = this.form.controls['initials'].value!
+      this.selected!.jobId = +this.form.controls['jobId'].value!
+      this.selected!.yearsOfService = +this.form.controls['yearsOfService'].value!
+      this.selected!.hireDate = new Date(this.form.controls['hireDate'].value!).toISOString()
 
 
       if (employeeId != null) {
         let url = environment.baseUrl + 'api/Employees/' + employeeId;
 
-        this.http.put(url, this.selected).subscribe(result => {
+        this.http.put(url, this.selected, {headers: httpHeaders}).subscribe(result => {
           let index = this.data.findIndex((el: any) => el.employeeId == employeeId)
           this.data[index] = this.selected!;
 
@@ -124,7 +124,9 @@ export class EmployeesComponent implements OnInit {
       } else {
         let url = environment.baseUrl + 'api/Employees';
 
-        this.http.post(url, this.selected).subscribe(result => {
+        this.http.post(url, this.selected, {
+          headers: httpHeaders
+        }).subscribe(result => {
           toast!.classList.remove('opacity-0')
 
           setTimeout(() => {
@@ -162,7 +164,7 @@ export class EmployeesComponent implements OnInit {
       .set("pageIndex", "0")
       .set("pageSize", "9999")
       .set("sortColumn", "description");
-    this.http.get<any>(url, { params }).subscribe(result => {
+    this.http.get<any>(url, { params: params, headers: httpHeaders }).subscribe(result => {
       this.jobs = result.data;
     }, error => console.error(error));
   }
@@ -174,16 +176,16 @@ export class EmployeesComponent implements OnInit {
       var employee = <Employee>{};
 
       employee.employeeId = (this.selected?.employeeId) ? this.selected.employeeId : 0;
-      employee.firstName = this.form.controls['firstName'].value
-      employee.lastName = this.form.controls['lastName'].value
-      employee.initials = this.form.controls['initials'].value
-      employee.jobId = +this.form.controls['jobId'].value
-      employee.yearsOfService = +this.form.controls['yearsOfService'].value
-      employee.hireDate = new Date(this.form.controls['hireDate'].value).toISOString()
+      employee.firstName = this.form.controls['firstName'].value!
+      employee.lastName = this.form.controls['lastName'].value!
+      employee.initials = this.form.controls['initials'].value!
+      employee.jobId = +this.form.controls['jobId'].value!
+      employee.yearsOfService = +this.form.controls['yearsOfService'].value!
+      employee.hireDate = new Date(this.form.controls['hireDate'].value!).toISOString()
 
       var url = environment.baseUrl + 'api/Employees/IsDuplicate';
 
-      return this.http.post<boolean>(url, employee).pipe(map(result => {
+      return this.http.post<boolean>(url, employee, {headers: httpHeaders}).pipe(map(result => {
         if (result) {
           this.error = 'Duplicate Row'
           return { isDuplicate: true }
@@ -197,9 +199,11 @@ export class EmployeesComponent implements OnInit {
 
   calculateYears() {
 
-    let hireYear = new Date(this.form.controls['hireDate'].value).getFullYear()
+    let hireYear = new Date(this.form.controls['hireDate'].value!).getFullYear()
     let currentYear = new Date().getFullYear()
 
-    this.form.get('yearsOfService')?.patchValue(currentYear - hireYear);
+    let diff = currentYear - hireYear
+
+    this.form.get('yearsOfService')?.patchValue(diff.toString());
   }
 }

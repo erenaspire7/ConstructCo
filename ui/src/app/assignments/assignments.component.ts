@@ -6,7 +6,7 @@ import { environment } from './../../environments/environment';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { convertToInputDate } from './../utilities/date-helper'
-import { decimalRegex } from './../utilities/constants'
+import { decimalRegex, httpHeaders } from './../utilities/constants'
 
 @Component({
   selector: 'app-assignments',
@@ -102,20 +102,22 @@ export class AssignmentsComponent implements OnInit {
       this.error = undefined
       let assignmentId = this.selected?.assignmentId
 
-      this.selected!.assignDate = new Date(this.form.controls['assignDate'].value).toISOString()
+      this.selected!.assignDate = new Date(this.form.controls['assignDate'].value!).toISOString()
 
-      this.selected!.projectId = +this.form.controls['projectId'].value
-      this.selected!.employeeId = +this.form.controls['employeeId'].value
-      this.selected!.assignJobId = +this.form.controls['assignJobId'].value
-      this.selected!.assignHourCharge = +this.form.controls['assignHourCharge'].value
-      this.selected!.hours = +this.form.controls['hours'].value
-      this.selected!.charge = +this.form.controls['charge'].value
+      this.selected!.projectId = +this.form.controls['projectId'].value!
+      this.selected!.employeeId = +this.form.controls['employeeId'].value!
+      this.selected!.assignJobId = +this.form.controls['assignJobId'].value!
+      this.selected!.assignHourCharge = +this.form.controls['assignHourCharge'].value!
+      this.selected!.hours = +this.form.controls['hours'].value!
+      this.selected!.charge = +this.form.controls['charge'].value!
       
 
       if (assignmentId != null) {
         let url = environment.baseUrl + 'api/Assignments/' + assignmentId;
 
-        this.http.put(url, this.selected).subscribe(result => {
+        this.http.put(url, this.selected, {
+          headers: httpHeaders
+        }).subscribe(result => {
           let index = this.data.findIndex((el: any) => el.assignmentId == assignmentId)
           this.data[index] = this.selected!;
 
@@ -131,7 +133,9 @@ export class AssignmentsComponent implements OnInit {
       } else {
         let url = environment.baseUrl + 'api/Assignments';
 
-        this.http.post(url, this.selected).subscribe(result => {
+        this.http.post(url, this.selected, {
+          headers: httpHeaders
+        }).subscribe(result => {
           toast!.classList.remove('opacity-0')
 
           setTimeout(() => {
@@ -168,18 +172,20 @@ export class AssignmentsComponent implements OnInit {
 
       assignment.assignmentId = (this.selected?.assignmentId) ? this.selected.assignmentId : 0;
 
-      assignment.assignDate = new Date(this.form.controls['assignDate'].value).toISOString()
+      assignment.assignDate = new Date(this.form.controls['assignDate'].value!).toISOString()
 
-      assignment.projectId = +this.form.controls['projectId'].value
-      assignment.employeeId = +this.form.controls['employeeId'].value
-      assignment.assignJobId = +this.form.controls['assignJobId'].value
-      assignment.assignHourCharge = +this.form.controls['assignHourCharge'].value
-      assignment.hours = +this.form.controls['hours'].value
-      assignment.charge = +this.form.controls['charge'].value
+      assignment.projectId = +this.form.controls['projectId'].value!
+      assignment.employeeId = +this.form.controls['employeeId'].value!
+      assignment.assignJobId = +this.form.controls['assignJobId'].value!
+      assignment.assignHourCharge = +this.form.controls['assignHourCharge'].value!
+      assignment.hours = +this.form.controls['hours'].value!
+      assignment.charge = +this.form.controls['charge'].value!
 
       var url = environment.baseUrl + 'api/Assignments/IsDuplicate';
 
-      return this.http.post<boolean>(url, assignment).pipe(map(result => {
+      return this.http.post<boolean>(url, assignment, {
+        headers: httpHeaders
+      }).pipe(map(result => {
         if (result) {
           this.error = 'Duplicate Row'
           return { isDuplicate: true }
@@ -197,7 +203,7 @@ export class AssignmentsComponent implements OnInit {
       .set("pageIndex", "0")
       .set("pageSize", "9999")
       .set("sortColumn", "name");
-    this.http.get<any>(url, { params }).subscribe(result => {
+    this.http.get<any>(url, { params: params, headers: httpHeaders }).subscribe(result => {
       this.projects = result.data;
     }, error => console.error(error));
   }
@@ -208,7 +214,7 @@ export class AssignmentsComponent implements OnInit {
       .set("pageIndex", "0")
       .set("pageSize", "9999")
       .set("sortColumn", "description");
-    this.http.get<any>(url, { params }).subscribe(result => {
+    this.http.get<any>(url, { params: params, headers: httpHeaders }, ).subscribe(result => {
       this.jobs = result.data;
     }, error => console.error(error));
   }
@@ -219,13 +225,13 @@ export class AssignmentsComponent implements OnInit {
       .set("pageIndex", "0")
       .set("pageSize", "9999")
       .set("sortColumn", "firstName");
-    this.http.get<any>(url, { params }).subscribe(result => {
+    this.http.get<any>(url, { params: params, headers: httpHeaders }).subscribe(result => {
       this.employees = result.data;
     }, error => console.error(error));
   }
 
   selectAssociatedHourCharge() {
-    let associatedJobId = +this.form.controls['assignJobId'].value
+    let associatedJobId = +this.form.controls['assignJobId'].value!
 
     let job = this.jobs.find((el: any) => el.jobId == associatedJobId)
 

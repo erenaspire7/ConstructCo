@@ -1,8 +1,6 @@
 module.exports = {
-    purge: [],
-    darkMode: false, // or 'media' or 'class'
     content: [
-        "./src/**/*.{html,ts}",
+        "./src/**/*.{html,ts}"
     ],
     theme: {
         maxHeight: {
@@ -25,4 +23,5 @@ module.exports = {
         },
     },
     plugins: [],
+
 }

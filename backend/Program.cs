@@ -15,6 +15,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(AppEnvironment.GetConnectionString())
 );
 
+string[] allowedHosts = {"http://localhost:4200"};
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CORS",
+        builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+    );
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,6 +36,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseCors("CORS"); // Add this line
 
 app.MapControllers();
 

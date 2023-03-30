@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { environment } from './../../environments/environment';
 import { HttpParams, HttpClient } from '@angular/common/http';
+import { httpHeaders } from '../utilities/constants';
 
 @Component({
   selector: 'app-dashboard',
@@ -64,6 +65,7 @@ export class DashboardComponent implements OnInit {
     this.loading = true;
 
     var url = environment.baseUrl + `api/${this.apiController}`;
+    console.log(url);
     var params = new HttpParams()
       .set("pageIndex", this.pageIndex.toString())
       .set("pageSize", this.pageSize.toString())
@@ -72,7 +74,7 @@ export class DashboardComponent implements OnInit {
       .set("filterColumns", this.filterHeadings.join(','))
       .set("filterQuery", this.searchString)
 
-    this.http.get<any>(url, { params }).subscribe(result => {
+    this.http.get<any>(url, { params: params, headers: httpHeaders }).subscribe(result => {
       this.data = result.data;
       this.totalPages = result.totalPages;
       this.totalEntries = result.totalCount;

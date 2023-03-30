@@ -5,7 +5,7 @@ import { environment } from './../../environments/environment';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Project } from './project';
-import { decimalRegex } from './../utilities/constants'
+import { decimalRegex, httpHeaders } from './../utilities/constants'
 
 
 @Component({
@@ -81,15 +81,15 @@ export class ProjectsComponent implements OnInit {
       this.error = undefined
       let projectId = this.selected?.projectId
 
-      this.selected!.name = this.form.controls['name'].value
-      this.selected!.value = +this.form.controls['value'].value
-      this.selected!.balance = +this.form.controls['balance'].value
-      this.selected!.employeeId = +this.form.controls['employeeId'].value
+      this.selected!.name = this.form.controls['name'].value!
+      this.selected!.value = +this.form.controls['value'].value!
+      this.selected!.balance = +this.form.controls['balance'].value!
+      this.selected!.employeeId = +this.form.controls['employeeId'].value!
 
       if (projectId != null) {
         let url = environment.baseUrl + 'api/Projects/' + projectId;
 
-        this.http.put(url, this.selected).subscribe(result => {
+        this.http.put(url, this.selected, { headers: httpHeaders }).subscribe(result => {
           let index = this.data.findIndex((el: any) => el.projectId == projectId)
           this.data[index] = this.selected!;
 
@@ -105,7 +105,7 @@ export class ProjectsComponent implements OnInit {
       } else {
         let url = environment.baseUrl + 'api/Projects';
 
-        this.http.post(url, this.selected).subscribe(result => {
+        this.http.post(url, this.selected, { headers: httpHeaders }).subscribe(result => {
           toast!.classList.remove('opacity-0')
 
           setTimeout(() => {
@@ -141,7 +141,7 @@ export class ProjectsComponent implements OnInit {
       .set("pageIndex", "0")
       .set("pageSize", "9999")
       .set("sortColumn", "firstName");
-    this.http.get<any>(url, { params }).subscribe(result => {
+    this.http.get<any>(url, { params: params, headers: httpHeaders }).subscribe(result => {
       this.employees = result.data;
     }, error => console.error(error));
   }
@@ -152,14 +152,14 @@ export class ProjectsComponent implements OnInit {
       var project = <Project>{};
 
       project.projectId = (this.selected?.projectId) ? this.selected.projectId : 0;
-      project.name = this.form.controls['name'].value;
-      project.value = +this.form.controls['value'].value;
-      project.balance = +this.form.controls['balance'].value;
-      project.employeeId = this.form.controls['employeeId'].value
+      project.name = this.form.controls['name'].value!;
+      project.value = +this.form.controls['value'].value!;
+      project.balance = +this.form.controls['balance'].value!;
+      project.employeeId = parseInt(this.form.controls['employeeId'].value!)
 
       var url = environment.baseUrl + 'api/Projects/IsDuplicate';
 
-      return this.http.post<boolean>(url, project).pipe(map(result => {
+      return this.http.post<boolean>(url, project, { headers: httpHeaders }).pipe(map(result => {
         if (result) {
           this.error = 'Duplicate Row'
           return { isDuplicate: true }
@@ -181,7 +181,7 @@ export class ProjectsComponent implements OnInit {
         .set("fieldValue", control.value);
       var url = environment.baseUrl + 'api/Jobs/IsDupeField';
 
-      return this.http.post<boolean>(url, null, { params })
+      return this.http.post<boolean>(url, null, { params: params, headers: httpHeaders })
         .pipe(map(result => {
           return (result ? { isDupeField: true } : null);
         }));
