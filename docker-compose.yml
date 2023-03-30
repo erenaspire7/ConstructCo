@@ -1,0 +1,18 @@
+version: "3.8"
+
+networks:
+  construct_co:
+    driver: bridge
+
+services:
+  backend:
+    build: 
+      context: backend
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "5000:40443"
+    networks:
+      - construct_co
+

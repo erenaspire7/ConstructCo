@@ -1,0 +1,24 @@
+<div class="h-screen bg-gradient-to-b from-gray-700 to-black flex justify-center items-center">
+  <div class="w-1/12 flex items-center justify-center">
+    <button (click)="previousOption()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-left-circle text-white" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z" />
+      </svg>
+    </button>
+  </div>
+  <div id="fade" class="w-10/12 h-4/6 shadow-2xl relative hover:scale-95 transform transition ease-in-out duration-500 cursor-pointer" [routerLink]="['/' + menuOptions[currentOption].text.toLowerCase()]">
+    <picture>
+      <img src="{{menuOptions[currentOption].url}}" class="h-full w-full object-cover hover:animate-pulse " />
+    </picture>
+    <div class="absolute -top-16 left-0 right-0 mx-auto w-min">
+      <h1 class="text-white poppins text-2xl tracking-tighter font-extrabold">{{menuOptions[currentOption].text}}</h1>
+    </div>
+  </div>
+  <div class="w-1/12 flex items-center justify-center">
+    <button (click)="nextOption()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-arrow-right-circle text-white" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z" />
+      </svg>
+    </button>
+  </div>
+</div>

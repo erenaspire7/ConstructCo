@@ -1,0 +1,142 @@
+<div class="h-screen bg-gradient-to-b from-gray-700 to-black flex justify-center items-center">
+  <div class="w-11/12 h-5/6 flex shadow-2xl">
+    <app-nav-bar></app-nav-bar>
+
+    <div class="h-full w-full p-6 poppins {{color}}">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h1 class="text-white text-xl tracking-tighter font-extrabold">{{dashboardName}}</h1>
+        </div>
+
+        <div class="flex items-center space-x-2 mx-auto">
+          <div class="border-b flex space-x-2 items-center pb-1">
+            <div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search text-white" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+              </svg>
+            </div>
+            <input class="w-96 focus:outline-none h-full text-sm bg-transparent text-white placeholder-white" placeholder="Search" [(ngModel)]="searchString" (keydown.enter)="search()" />
+          </div>
+
+          <div class="relative" id="filterBox">
+            <button class="flex space-x-1 items-center bg-gray-900 text-white py-2 pl-4 pr-3 rounded-sm text-xs" (click)="activateFilter()">
+              <span>Filters</span>
+              <span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16">
+                  <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                </svg>
+              </span>
+            </button>
+            <div class="absolute rounded-md bg-gray-700 transition duration-500 opacity-0 p-4 space-y-4 mt-2 min-w-max" id="filters">
+              <div *ngFor="let col of filters">
+                <div class="flex items-center">
+                  <input id="default-checkbox" type="checkbox" [(ngModel)]="col.searchFilter" class="w-4 h-4 text-blue-600 bg-gray-100 rounded">
+                  <label for="default-checkbox" class="ml-2 text-xs text-white">{{col.text}}</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+
+        <div class="">
+          <button class="text-white" (click)="emitUpdateEvent()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="text-white max-h-table overflow-y-scroll">
+        <table class="w-full border-l-2 border-gray-900">
+
+          <thead class="sticky top-0">
+            <tr class="bg-gray-900 text-left">
+              <th *ngFor="let col of tableHeadings" class="font-normal p-3 text-sm">
+                <button class="flex items-center" (click)="sortData(col.key)" [attr.disabled]="col.key == null ? true : null" [ngClass]="{'cursor-not-allowed': col.key == null }">
+                  <span class="">
+                    {{col.text}}
+                  </span>
+
+                  <span class="inline-block align-middle" *ngIf="col.key != null && selectedSortColumn == col.key">
+                    <svg *ngIf="selectedSortOrder == 'desc'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down-short" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 1 1 .708-.708L7.5 10.293V4.5A.5.5 0 0 1 8 4z" />
+                    </svg>
+                    <svg *ngIf="selectedSortOrder == 'asc'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up-short" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M8 12a.5.5 0 0 0 .5-.5V5.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 5.707V11.5a.5.5 0 0 0 .5.5z" />
+                    </svg>
+                  </span>
+                </button>
+              </th>
+            </tr>
+          </thead>
+
+
+          <tr>
+            <td colspan="100" class="text-center" *ngIf="loading">
+              <div class="spinner mx-auto bg-gray-900 h-12 w-12">
+
+              </div>
+            </td>
+
+          </tr>
+
+
+
+          <tbody class="divide-y" *ngIf="!loading">
+            <tr *ngFor="let row of data" class="text-xs">
+              <td class="p-3 " *ngFor="let prop of row | keyvalue: keepOrder | callback: tableHeadings">
+                {{prop.value}}
+              </td>
+              <td class="p-3">
+                <button (click)="emitUpdateEvent(row)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+
+        </table>
+      </div>
+
+      <div class="w-full flex justify-between items-center text-xs py-3 px-6 space-x-4 bg-gray-900 text-white">
+        <div class="flex space-x-2">
+          <p>Items Per Page</p>
+
+          <select class="bg-gray-900" (change)="changePageSize($event)">
+            <option>10</option>
+            <option>20</option>
+            <option>50</option>
+          </select>
+        </div>
+
+        <div>
+          <p>Showing {{(pageIndex * pageSize) + 1}} to {{maxEntries}} of {{totalEntries}} results</p>
+        </div>
+
+        <div class="space-x-2">
+          <button [ngClass]="{'opacity-50' : !hasPreviousPage, 'cursor-not-allowed': !hasPreviousPage }" (click)="previousPage()" [attr.disabled]="!hasPreviousPage ? true : null">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+              <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
+            </svg>
+          </button>
+
+          <button [ngClass]="{'opacity-50' : !hasNextPage, 'cursor-not-allowed': !hasNextPage }" (click)="nextPage()" [attr.disabled]="!hasNextPage ? true : null">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+              <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+            </svg>
+          </button>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
